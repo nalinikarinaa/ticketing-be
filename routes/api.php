@@ -47,9 +47,16 @@ Route::prefix('v1')->group(function () {
 
     // ✅ redirect ke FE
     return redirect(config('app.frontend_url') . '/');
-})->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+    })->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
 
+    // Dashboard API (role based)
+    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+        Route::get('/dashboardadmin', fn() => response()->json(['message' => 'Halaman Admin']));
+    });
 
+    Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
+        Route::get('/dashboard', fn() => response()->json(['message' => 'Halaman User']));
+    });
 
 });
 

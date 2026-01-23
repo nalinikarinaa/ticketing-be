@@ -36,4 +36,56 @@ class AuthController extends Controller
             'token'   => $token,
         ], 201);
     }
+
+
+public function login(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Email atau password salah'], 401);
+        }
+
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email belum diverifikasi'], 403);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        $redirect = $user->role === 'admin' ? '/dashboardadmin' : '/dashboard';
+
+        return response()->json([
+            'message'  => 'Login berhasil.',
+            'token'    => $token,
+            'redirect' => $redirect,
+            'role'     => $user->role,
+            'user'     => [
+                'id'       => $user->id,
+                'name'     => $user->name,
+                // 'username' => $user->username,
+                'email'    => $user->email,
+                'role'     => $user->role,
+            ],
+        ]);
+        
+    }
+
+    /**
+     * Logout user (revoke token)
+     */
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Logout berhasil.',
+        ]);
+    }
 }
+
+
