@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -47,7 +48,7 @@ Route::prefix('v1')->group(function () {
 
     // ✅ redirect ke FE
     return redirect(config('app.frontend_url') . '/');
-    })->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+    })->middleware(['signed', 'throttle:6,1'])->name('api.verification.verify');
 
     // Dashboard API (role based)
     Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
@@ -57,6 +58,10 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
         Route::get('/dashboard', fn() => response()->json(['message' => 'Halaman User']));
     });
+
+    // ngambil data untuk manajemen user
+     Route::get('/users', [UserController::class, 'index']);
+    //  Route::post('/login', [AuthController::class, 'login']);
 
 });
 
