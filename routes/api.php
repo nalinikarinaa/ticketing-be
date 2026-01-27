@@ -60,8 +60,10 @@ Route::prefix('v1')->group(function () {
     });
 
     // ngambil data untuk manajemen user
-     Route::get('/users', [UserController::class, 'index']);
-    //  Route::post('/login', [AuthController::class, 'login']);
+     Route::get('/users', [UserController::class, 'index']); //list semua
+    Route::get('/users/{id}', [UserController::class, 'show']);   // detail
+    Route::put('/users/{id}', [UserController::class, 'update']); // edit
+    Route::delete('/users/{id}', [UserController::class, 'destroy']); // delete
 
 });
 
