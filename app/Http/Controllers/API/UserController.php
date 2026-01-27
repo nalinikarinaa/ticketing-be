@@ -14,9 +14,18 @@ class UserController extends Controller
     public function index()
     {
         try {
-            $users = User::select('id', 'name', 'email', 'role', 'status', 'created_at')
+            $users = User::select('id', 'name', 'email', 'role', 'created_at')
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->get()
+                ->map(function ($user) {
+                    return [
+                        'id'     => $user->id,
+                        'name'   => $user->name,
+                        'email'  => $user->email,
+                        'role'   => $user->role,
+                        'status' => 'Aktif', 
+                    ];
+                });
 
             return response()->json([
                 'success' => true,
