@@ -15,7 +15,7 @@ class UserController extends Controller
     public function index()
     {
         try {
-            $users = User::select('id', 'name', 'email', 'role', 'created_at')
+            $users = User::select('id', 'name', 'email', 'role', 'status', 'created_at')
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($user) {
@@ -24,7 +24,8 @@ class UserController extends Controller
                         'name'   => $user->name,
                         'email'  => $user->email,
                         'role'   => $user->role,
-                        'status' => 'Aktif', 
+                        'status' => $user->status,
+                        // 'status' => 'Aktif', 
                     ];
                 });
 
@@ -64,7 +65,8 @@ class UserController extends Controller
                     'name'   => $user->name,
                     'email'  => $user->email,
                     'role'   => $user->role,
-                    'status' => 'Aktif', // default sementara
+                    'status' => $user->status,
+                    // 'status' => 'Aktif', // default sementara
                 ]
             ], 200);
 
@@ -94,7 +96,7 @@ class UserController extends Controller
                 'name'  => 'required|string|max:255',
                 'email' => 'required|email|max:255|unique:users,email,' . $id,
                 'role'  => 'required|in:user,admin',
-                // 'status' => 'required|in:Aktif,Non Aktif', // aktifkan kalau kolom status sudah ada
+                'status' => 'required|in:Aktif,Non Aktif', // aktifkan kalau kolom status sudah ada
             ]);
 
             if ($validator->fails()) {
@@ -108,7 +110,7 @@ class UserController extends Controller
             $user->name  = $request->name;
             $user->email = $request->email;
             $user->role  = $request->role;
-            // $user->status = $request->status; // kalau kolom status sudah ada
+            $user->status = $request->status; // kalau kolom status sudah ada
 
             $user->save();
 
@@ -120,7 +122,8 @@ class UserController extends Controller
                     'name'   => $user->name,
                     'email'  => $user->email,
                     'role'   => $user->role,
-                    'status' => 'Aktif', // default sementara
+                    'status' => $user->status,
+                    // 'status' => 'Aktif', // default sementara
                 ]
             ], 200);
 

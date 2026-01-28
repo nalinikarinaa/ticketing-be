@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\TicketController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -60,10 +61,17 @@ Route::prefix('v1')->group(function () {
     });
 
     // ngambil data untuk manajemen user
-     Route::get('/users', [UserController::class, 'index']); //list semua
+    Route::get('/users', [UserController::class, 'index']); //list semua
     Route::get('/users/{id}', [UserController::class, 'show']);   // detail
     Route::put('/users/{id}', [UserController::class, 'update']); // edit
     Route::delete('/users/{id}', [UserController::class, 'destroy']); // delete
+
+    // ADD TIKET
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/addticket', [TicketController::class, 'store']);
+    });
+
+
 
 });
 
