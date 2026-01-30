@@ -68,8 +68,12 @@ Route::prefix('v1')->group(function () {
 
     // ADD TIKET
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/addticket', [TicketController::class, 'store']);
-    });
+    Route::post('/addticket', [TicketController::class, 'store']);
+    Route::get('/me', fn (Request $request) => $request->user());
+});
+
+
+
 
 
 

@@ -11,54 +11,48 @@ class TicketController extends Controller
 {
     public function store(Request $request)
     {
-         $user = $request->user(); 
-        try {
-            // 🔹 VALIDASI
-            $validator = Validator::make($request->all(), [
-                'subject'     => 'required|string|max:255',
-                'category'    => 'required|string',
-                'priority'    => 'required|in:low,medium,high',
-                'description' => 'required|string',
-                'attachment'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            ]);
+        // 🔥 pastikan user login
+        $user = $request->user();
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validasi gagal',
-                    'errors'  => $validator->errors(),
-                ], 422);
-            }
-
-            // 🔹 SIMPAN FILE (opsional)
-            $attachmentPath = null;
-            if ($request->hasFile('attachment')) {
-                $attachmentPath = $request->file('attachment')->store('tickets', 'public');
-            }
-
-            // 🔹 CREATE TICKET
-            $ticket = Ticket::create([
-                'subject'     => $request->subject,
-                'category'    => $request->category,
-                'priority'    => $request->priority,
-                'description' => $request->description,
-                'status'      => 'Open',
-                'attachment'  => $attachmentPath,
-                'user_id'     => auth()->id(), // pastikan pakai auth middleware
-            ]);
-
+        if (!$user) {
             return response()->json([
-                'success' => true,
-                'message' => 'Ticket berhasil dibuat',
-                'data'    => $ticket,
-            ], 201);
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
 
-        } catch (\Exception $e) {
+        $validator = Validator::make($request->all(), [
+            'subject'     => 'required|string|max:255',
+            'category'    => 'required|string',
+            'priority'    => 'required|in:low,medium,high',
+            'description' => 'required|string',
+            'attachment'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
+
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal membuat ticket',
-                'error'   => $e->getMessage(),
-            ], 500);
+                'errors'  => $validator->errors(),
+            ], 422);
         }
+
+        $attachmentPath = null;
+        if ($request->hasFile('attachment')) {
+            $attachmentPath = $request->file('attachment')->store('tickets', 'public');
+        }
+
+        $ticket = Ticket::create([
+            'subject'     => $request->subject,
+            'category'    => $request->category,
+            'priority'    => $request->priority,
+            'description' => $request->description,
+            'status'      => 'Open',
+            'attachment'  => $attachmentPath,
+            'user_id'     => $user->id, // 🔥 AMAN
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $ticket,
+        ], 201);
     }
 }
