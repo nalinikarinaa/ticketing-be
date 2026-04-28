@@ -69,7 +69,20 @@ Route::prefix('v1')->group(function () {
     // ADD TIKET
     Route::middleware('auth:sanctum')->group(function () {
     Route::post('/addticket', [TicketController::class, 'store']);
-    Route::get('/me', fn (Request $request) => $request->user());
+     Route::get('/tickets', [TicketController::class, 'index']);
+    Route::get('/ticket/{id}', [TicketController::class, 'show']);
+
+
+    //untuk memunculkan nama user di dashboard user
+    Route::get('/me', function (Request $request) {
+    return response()->json([
+        'success' => true,
+        'data' => $request->user()
+    ]);
+});
+
+
+
 });
 
 

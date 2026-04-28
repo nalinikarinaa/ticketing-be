@@ -47,7 +47,7 @@ class TicketController extends Controller
             'description' => $request->description,
             'status'      => 'Open',
             'attachment'  => $attachmentPath,
-            'user_id'     => $user->id, // 🔥 AMAN
+            'user_id'     => $user->id,
         ]);
 
         return response()->json([
@@ -55,4 +55,36 @@ class TicketController extends Controller
             'data'    => $ticket,
         ], 201);
     }
-}
+
+        public function index(Request $request)
+        {
+            $user = $request->user();
+
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Unauthenticated'
+                ], 401);
+            }
+
+            // if ($user->role == 'admin') {
+            //     $tickets = Ticket::latest()->get(); // semua
+            // } else {
+            //     $tickets = Ticket::where('user_id', $user->id)->latest()->get(); // milik sendiri
+            // }
+
+            if ($user->role == 'admin') {
+                $tickets = Ticket::with('user')->latest()->get();
+            } else {
+                $tickets = Ticket::with('user')
+                                ->where('user_id', $user->id)
+                                ->latest()
+                                ->get();
+            }
+
+
+            return response()->json([
+                'success' => true,
+                'data' => $tickets
+            ]);
+        }
+        }
