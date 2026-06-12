@@ -87,4 +87,21 @@ class TicketController extends Controller
                 'data' => $tickets
             ]);
         }
+
+        public function show($id)
+        {
+            $ticket = Ticket::with('user')->find($id);
+
+            if (!$ticket) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ticket tidak ditemukan'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $ticket
+            ]);
+        }
         }
