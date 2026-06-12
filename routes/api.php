@@ -72,6 +72,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/tickets', [TicketController::class, 'index']);
     Route::get('/ticket/{id}', [TicketController::class, 'show']);
     Route::get('/detailtickets/{id}', [TicketController::class, 'show']);
+    Route::put('/edittickets/{id}', [TicketController::class, 'update']);
 
 
     //untuk memunculkan nama user di dashboard user

@@ -104,4 +104,39 @@ class TicketController extends Controller
                 'data' => $ticket
             ]);
         }
+
+        public function update(Request $request, $id)
+        {
+            $ticket = Ticket::find($id);
+
+            if (!$ticket) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ticket tidak ditemukan'
+                ], 404);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'status' => 'required|in:Open,In Progress,Resolved,Closed',
+                'priority' => 'required|in:Low,Medium,High',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $ticket->update([
+                'status' => $request->status,
+                'priority' => $request->priority,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Ticket berhasil diperbarui',
+                'data' => $ticket
+            ]);
+        }
         }
